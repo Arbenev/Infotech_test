@@ -11,10 +11,13 @@ class m231017_102352_table_role extends Migration
     const ROLE_TABLE_NAME = 'role';
     const ACCESS_TABLE_NAME = 'access';
     const ACCESS_LIST_TABLE_NAME = 'acl';
+    const USER_TABLE_NAME = 'user';
+    const ROLE_GUEST_ID = 1;
+    const ROLE_USER_ID = 2;
 
     static protected $roles = [
-        'guest',
-        'user',
+        self::ROLE_GUEST_ID => 'guest',
+        self::ROLE_USER_ID => 'user',
     ];
     static protected $access = [
         'view',
@@ -42,27 +45,49 @@ class m231017_102352_table_role extends Migration
      */
     public function safeUp()
     {
+        $rolesIds = $this->tableRole();
+        $accessIds = $this->tableAccess();
+        $this->tableAcl($rolesIds, $accessIds);
+        $this->tableUser();
+    }
+
+    private function tableRole()
+    {
         $columns = [
             'id' => 'INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT',
             'name' => 'VARCHAR(16) NOT NULL',
         ];
         $rolesIds = [];
         $this->createTable(self::ROLE_TABLE_NAME, $columns);
-        foreach (self::$roles as $role) {
-            $this->insert(self::ROLE_TABLE_NAME, ['name' => $role]);
-            $rolesIds[$role] = $this->getDb()->getLastInsertID();
+        foreach (self::$roles as $id => $role) {
+            $this->insert(self::ROLE_TABLE_NAME, ['id' => $id, 'name' => $role]);
+            $rolesIds[$role] = $id;
         }
+        return $rolesIds;
+    }
+
+    private function tableAccess()
+    {
+        $columns = [
+            'id' => 'INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT',
+            'name' => 'VARCHAR(16) NOT NULL',
+        ];
         $this->createTable(self::ACCESS_TABLE_NAME, $columns);
         $accessIds = [];
         foreach (self::$access as $access) {
             $this->insert(self::ACCESS_TABLE_NAME, ['name' => $access]);
             $accessIds[$access] = $this->getDb()->getLastInsertID();
         }
-        $accessColumns = [
+        return $accessIds;
+    }
+
+    private function tableAcl($rolesIds, $accessIds)
+    {
+        $columns = [
             'role_id' => 'INT(11) NOT NULL',
             'access_id' => 'INT(11) NOT NULL',
         ];
-        $this->createTable(self::ACCESS_LIST_TABLE_NAME, $accessColumns);
+        $this->createTable(self::ACCESS_LIST_TABLE_NAME, $columns);
         $this->createIndex('UNX_acl', self::ACCESS_LIST_TABLE_NAME, ['role_id', 'access_id'], true);
         $this->addForeignKey('FK_acl__role', self::ACCESS_LIST_TABLE_NAME, 'role_id', self::ROLE_TABLE_NAME, 'id', 'CASCADE', 'CASCADE');
         $this->addForeignKey('FK_acl__access', self::ACCESS_LIST_TABLE_NAME, 'access_id', self::ACCESS_TABLE_NAME, 'id', 'CASCADE', 'CASCADE');
@@ -75,6 +100,29 @@ class m231017_102352_table_role extends Migration
                 $this->insert(self::ACCESS_LIST_TABLE_NAME, $aclColumns);
             }
         }
+    }
+
+    private function tableUser()
+    {
+        $columns = [
+            'id' => 'INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT',
+            'login' => 'VARCHAR(16) NOT NULL',
+            'password' => 'VARCHAR(32) NOT NULL DEFAULT \'\'',
+            'phone' => 'VARCHAR(32) NOT NULL DEFAULT \'\'',
+            'role_id' => 'INT(11) NOT NULL DEFAULT ' . self::ROLE_USER_ID,
+        ];
+        $this->createTable(self::USER_TABLE_NAME, $columns);
+        $guest = [
+            'login' => 'guest',
+            'password' => md5('guest'),
+            'role_id' => self::ROLE_GUEST_ID,
+        ];
+        $user = [
+            'login' => 'user',
+            'password' => md5('user'),
+        ];
+        $this->insert(self::USER_TABLE_NAME, $guest);
+        $this->insert(self::USER_TABLE_NAME, $user);
     }
 
     /**
