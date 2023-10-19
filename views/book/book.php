@@ -18,7 +18,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     Pjax::begin();
     $form = ActiveForm::begin(['action' => '/book/save']);
-//    echo Html::hiddenInput('id', $book->id);
     echo $form->field($book, 'id')->hiddenInput();
     echo $form->field($book, 'title');
     echo $form->field($book, 'year');
