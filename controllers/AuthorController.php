@@ -3,10 +3,12 @@
 namespace app\controllers;
 
 use yii\web\Controller;
-use yii\web\HttpException;
+use yii\web\ForbiddenHttpException;
 use yii\web\BadRequestHttpException;
-use app\models\Auth\User;
+use app\models\User;
 use app\models\Books\Author;
+use app\models\Books\Subscription;
+use yii\web\ConflictHttpException;
 
 /**
  * Work on authors
@@ -28,7 +30,7 @@ class AuthorController extends Controller
     {
         $user = User::getCurrentUser();
         if (!$user->checkAccess(\app\models\Auth\Access::ACCESS_EDIT)) {
-            throw new HttpException(403, 'Forbidden');
+            throw new ForbiddenHttpException(403, 'Forbidden');
         }
         if ($id) {
             $author = Author::findOne($id);
@@ -63,7 +65,7 @@ class AuthorController extends Controller
     {
         $user = User::getCurrentUser();
         if (!$user->checkAccess(\app\models\Auth\Access::ACCESS_DELETE)) {
-            throw new HttpException(403, 'Forbidden');
+            throw new ForbiddenHttpException(403, 'Forbidden');
         }
         Author::findOne($id)->delete();
         $this->redirect(\Yii::$app->urlManager->createUrl('/authors/'));
@@ -81,5 +83,29 @@ class AuthorController extends Controller
             throw new BadRequestHttpException('Year is required');
         }
         return json_encode(Author::getTop10($year));
+    }
+
+    public function actionSubscribe($authorId)
+    {
+        $user = User::getCurrentUser();
+        if (!$user->checkAccess(\app\models\Auth\Access::ACCESS_SUBSCRIPTION)) {
+            throw new ForbiddenHttpException(403, 'Forbidden');
+        }
+        if (Subscription::exists($user->id, $authorId)){
+            throw new ConflictHttpException('Exists already');
+        }
+        Subscription::make($user->id, $authorId);
+    }
+
+    public function actionUnsubscribe($authorId)
+    {
+        $user = User::getCurrentUser();
+        if (!$user->checkAccess(\app\models\Auth\Access::ACCESS_SUBSCRIPTION)) {
+            throw new ForbiddenHttpException(403, 'Forbidden');
+        }
+        if (!Subscription::exists($user->id, $authorId)){
+            throw new ConflictHttpException('No subscription');
+        }
+        Subscription::remove($user->id, $authorId);
     }
 }

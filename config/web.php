@@ -58,6 +58,8 @@ $config = [
                 'author/save' => 'author/save',
                 'author/delete/<id>' => 'author/delete',
                 'author/<id>' => 'author/one',
+                'subscribe/<authorId>' => 'author/subscribe',
+                'unsubscribe/<authorId>' => 'author/unsubscribe',
             ],
         ],
     ],

@@ -3,9 +3,9 @@
 namespace app\controllers;
 
 use yii\web\Controller;
-use yii\web\HttpException;
+use yii\web\ForbiddenHttpException;
 use yii\web\UploadedFile;
-use app\models\Auth\User;
+use app\models\User;
 use app\models\Books\Book;
 use app\models\Books\Cover;
 
@@ -29,7 +29,7 @@ class BookController extends Controller
     {
         $user = User::getCurrentUser();
         if (!$user->checkAccess(\app\models\Auth\Access::ACCESS_EDIT)) {
-            throw new HttpException(403, 'Forbidden');
+            throw new ForbiddenHttpException(403, 'Forbidden');
         }
         if ($id) {
             $book = Book::findOne($id);
@@ -67,7 +67,7 @@ class BookController extends Controller
     {
         $user = User::getCurrentUser();
         if (!$user->checkAccess(\app\models\Auth\Access::ACCESS_DELETE)) {
-            throw new HttpException(403, 'Forbidden');
+            throw new ForbiddenHttpException(403, 'Forbidden');
         }
         $book = Book::findOne($id);
         if ($book->cover) {
