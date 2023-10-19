@@ -5,6 +5,7 @@ namespace app\models;
 use app\models\Auth\User as UserDb;
 use app\models\Auth\Role;
 use app\models\Auth\Acl;
+use app\models\Books\Subscription;
 
 class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
 {
@@ -93,6 +94,15 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
 
     /**
      *
+     * @return \app\models\User
+     */
+    public static function getCurrentUser()
+    {
+        return \Yii::$app->user->getIdentity();
+    }
+
+    /**
+     *
      * @return Auth\Role
      */
     public function getRole()
@@ -103,5 +113,14 @@ class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
     public function checkAccess($access)
     {
         return Acl::checkAccess($this->getRole()->name, $access);
+    }
+
+    public function hasSubscription($authorId)
+    {
+        return (new \yii\db\Query)->
+                        from(Subscription::tableName())->
+                        where('[[user_id]]=' . $this->id)->
+                        andWhere('[[author_id]]=' . $authorId)->
+                        count() > 0;
     }
 }

@@ -3,9 +3,9 @@
 namespace app\controllers;
 
 use yii\web\Controller;
-use yii\web\HttpException;
+use yii\web\ForbiddenHttpException;
 use yii\web\UploadedFile;
-use app\models\Auth\User;
+use app\models\User;
 use app\models\Books\Book;
 use app\models\Books\Cover;
 
@@ -29,7 +29,7 @@ class BookController extends Controller
     {
         $user = User::getCurrentUser();
         if (!$user->checkAccess(\app\models\Auth\Access::ACCESS_EDIT)) {
-            throw new HttpException(403, 'Forbidden');
+            throw new ForbiddenHttpException(403, 'Forbidden');
         }
         if ($id) {
             $book = Book::findOne($id);
@@ -55,6 +55,7 @@ class BookController extends Controller
         $oldCover = $book->cover;
         if ($book->load(\Yii::$app->request->post()) && $book->validate()) {
             if ($book->save()) {
+                $this->setAuthors($book, \Yii::$app->request->post('authors'));
                 $this->uploadCover($book, $oldCover);
                 $this->redirect(\Yii::$app->urlManager->createUrl('/book/' . $book->id));
             }
@@ -67,7 +68,7 @@ class BookController extends Controller
     {
         $user = User::getCurrentUser();
         if (!$user->checkAccess(\app\models\Auth\Access::ACCESS_DELETE)) {
-            throw new HttpException(403, 'Forbidden');
+            throw new ForbiddenHttpException(403, 'Forbidden');
         }
         $book = Book::findOne($id);
         if ($book->cover) {
@@ -75,6 +76,25 @@ class BookController extends Controller
         }
         $book->delete();
         $this->redirect(\Yii::$app->urlManager->createUrl('/authors/'));
+    }
+
+    private function setAuthors(Book $book, array $authorIds)
+    {
+        $book->deleteAuthors();
+        $user = User::getCurrentUser();
+        $smsPilot = new \app\models\Integration\SmsPilotSmall(\Yii::$app->params['smsPilotApiKey']);
+        foreach ($authorIds as $id) {
+            if (\app\models\Books\Subscription::exists($user->id, $id)) {
+                $author = \app\models\Books\Author::findOne($id);
+                $text = sprintf(\Yii::$app->params['smsMessage'], $author->getFullName());
+                $smsPilot->send($user->phone, $text);
+            }
+            $fields = [
+                'book_id' => $book->id,
+                'author_id' => $id,
+            ];
+            (new \app\models\Books\BookAuthor($fields))->save();
+        }
     }
 
     private function uploadCover(Book $book, $oldCover)

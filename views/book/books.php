@@ -65,9 +65,3 @@ $this->params['breadcrumbs'][] = $this->title;
     Pjax::end();
     ?>
 </div>
-<script type="text/javascript">
-    function newBook() {
-        window.location.href = '/book/create';
-    }
-    ;
-</script>

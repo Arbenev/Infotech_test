@@ -2,10 +2,14 @@
 
 namespace app\models\Auth;
 
-use \yii\db\ActiveRecord;
+use yii\db\ActiveRecord;
+use app\models\Books\Subscription;
 
 /**
  * User
+ *
+ * @author acround
+ *
  * @property int $id Primary
  * @property string $username User name
  * @property string $password Password
@@ -26,12 +30,8 @@ class User extends ActiveRecord
         return $this->hasOne(Role::class, ['id' => 'role_id']);
     }
 
-    /**
-     *
-     * @return User
-     */
-    public static function getCurrentUser()
+    public function getSubscriptions()
     {
-        return \Yii::$app->user->getIdentity();
+        return $this->hasMany(Subscription::className(), ['id' => 'user_id'])->all();
     }
 }
