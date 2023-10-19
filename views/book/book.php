@@ -17,9 +17,14 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="edit_form">
     <?php
     Pjax::begin();
+    $authors = [];
+    foreach (\app\models\Books\Author::getFullList() as $author) {
+        $authors[$author->id] = $author->getFullName();
+    }
     $form = ActiveForm::begin(['action' => '/book/save']);
     echo $form->field($book, 'id')->hiddenInput();
     echo $form->field($book, 'title');
+    echo Html::checkboxList('authors', $book->getAuthorIds(), $authors, ['separator' => '<br>']);
     echo $form->field($book, 'year');
     echo $form->field($book, 'description')->textarea(['rows' => '6']);
     echo $form->field($book, 'isbn');

@@ -43,6 +43,11 @@ class Author extends ActiveRecord
         return new \yii\data\ActiveDataProvider($config);
     }
 
+    public static function getFullList()
+    {
+        return self::find()->orderBy(['last_name' => SORT_ASC, 'first_name' => SORT_ASC, 'middle_name' => SORT_ASC,])->all();
+    }
+
     public static function getTop10($year)
     {
         $query = $this->makeTopQuery($year);

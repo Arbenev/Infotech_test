@@ -55,6 +55,7 @@ class BookController extends Controller
         $oldCover = $book->cover;
         if ($book->load(\Yii::$app->request->post()) && $book->validate()) {
             if ($book->save()) {
+                $this->setAuthors($book, \Yii::$app->request->post('authors'));
                 $this->uploadCover($book, $oldCover);
                 $this->redirect(\Yii::$app->urlManager->createUrl('/book/' . $book->id));
             }
@@ -75,6 +76,18 @@ class BookController extends Controller
         }
         $book->delete();
         $this->redirect(\Yii::$app->urlManager->createUrl('/authors/'));
+    }
+
+    private function setAuthors(Book $book, array $authorIds)
+    {
+        $book->deleteAuthors();
+        foreach ($authorIds as $id) {
+            $fields = [
+                'book_id' => $book->id,
+                'author_id' => $id,
+            ];
+            (new \app\models\Books\BookAuthor($fields))->save();
+        }
     }
 
     private function uploadCover(Book $book, $oldCover)
