@@ -86,3 +86,38 @@ a.desc:after {
 .form-group {
     margin-bottom: 1rem;
 }
+.pagination li {
+    width: 2em;
+    margin: 2px;
+}
+.pagination li a {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    border-radius: 5px;
+}
+.pagination li.active a {
+    color:white;
+    background-color: #93c47d;
+    box-shadow: #93c47d 3px 3px 5px;
+}
+.pagination li a:hover {
+    background-color: #d9ead3;
+}
+.pagination li.active:hover a {
+    color:white;
+    background-color: #93c47d;
+}
+img.cover {
+    width: 100px;
+}
+.right {
+    float: right;
+}
+.edit_form {
+    border: solid 1px gray;
+    padding: 1em;
+}
+.form-group{
+    margin: 1em 0;
+}

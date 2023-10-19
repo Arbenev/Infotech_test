@@ -39,6 +39,21 @@ class m231017_102352_table_role extends Migration
             'delete',
         ],
     ];
+    static protected $users = [];
+
+    public function __construct($config = [])
+    {
+        parent::__construct($config);
+        self::$users[] = [
+            'username' => 'guest',
+            'password' => md5('guest'),
+            'role_id' => self::ROLE_GUEST_ID,
+        ];
+        self::$users[] = [
+            'username' => 'user',
+            'password' => md5('user'),
+        ];
+    }
 
     /**
      * {@inheritdoc}
@@ -106,23 +121,17 @@ class m231017_102352_table_role extends Migration
     {
         $columns = [
             'id' => 'INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT',
-            'login' => 'VARCHAR(16) NOT NULL',
+            'username' => 'VARCHAR(16) NOT NULL',
             'password' => 'VARCHAR(32) NOT NULL DEFAULT \'\'',
+            'authKey' => 'VARCHAR(32) NOT NULL DEFAULT \'\'',
+            'accessToken' => 'VARCHAR(32) NOT NULL DEFAULT \'\'',
             'phone' => 'VARCHAR(32) NOT NULL DEFAULT \'\'',
             'role_id' => 'INT(11) NOT NULL DEFAULT ' . self::ROLE_USER_ID,
         ];
         $this->createTable(self::USER_TABLE_NAME, $columns);
-        $guest = [
-            'login' => 'guest',
-            'password' => md5('guest'),
-            'role_id' => self::ROLE_GUEST_ID,
-        ];
-        $user = [
-            'login' => 'user',
-            'password' => md5('user'),
-        ];
-        $this->insert(self::USER_TABLE_NAME, $guest);
-        $this->insert(self::USER_TABLE_NAME, $user);
+        foreach (self::$users as $user) {
+            $this->insert(self::USER_TABLE_NAME, $user);
+        }
     }
 
     /**
@@ -130,6 +139,7 @@ class m231017_102352_table_role extends Migration
      */
     public function safeDown()
     {
+        $this->dropTable(self::USER_TABLE_NAME);
         $this->dropTable(self::ACCESS_LIST_TABLE_NAME);
         $this->dropTable(self::ACCESS_TABLE_NAME);
         $this->dropTable(self::ROLE_TABLE_NAME);
