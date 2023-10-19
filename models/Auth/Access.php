@@ -7,6 +7,8 @@ use \yii\db\ActiveRecord;
 /**
  * Access
  *
+ * @author acround
+ *
  * @property int $id Primary
  * @property string $name Access name
  */

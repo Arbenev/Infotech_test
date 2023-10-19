@@ -7,6 +7,8 @@ use \yii\db\ActiveRecord;
 /**
  * Subscription
  *
+ * @author acround
+ *
  * @property int $id Primary
  * @property int $user_id User id
  * @property int $author_id Author id

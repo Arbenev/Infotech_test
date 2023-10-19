@@ -8,6 +8,8 @@ use app\models\Books\Subscription;
 /**
  * User
  *
+ * @author acround
+ *
  * @property int $id Primary
  * @property string $username User name
  * @property string $password Password

@@ -8,6 +8,7 @@ use \yii\db\ActiveRecord;
  * Link Book->Author
  *
  * @author acround
+ * 
  * @property int $book_id Book id
  * @property int $author_id Author_id
  */

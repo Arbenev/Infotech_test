@@ -7,6 +7,8 @@ use \yii\db\ActiveRecord;
 /**
  * User role
  *
+ * @author acround
+ *
  * @property int $id Primary
  * @property string $name Role name
  */

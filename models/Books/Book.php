@@ -7,6 +7,8 @@ use \yii\db\ActiveRecord;
 /**
  * Book
  *
+ * @author acround
+ *
  * @property int $id Primary
  * @property string $title Book title
  * @property int $year Year of writing

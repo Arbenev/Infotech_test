@@ -8,6 +8,9 @@ use \yii\db\ActiveRecord;
  * Access control list row
  *
  * @author acround
+ *
+ * @property int $role_id Role
+ * @property int $access_id Access
  */
 class Acl extends ActiveRecord
 {

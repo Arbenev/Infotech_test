@@ -8,6 +8,8 @@ use yii\db\Query;
 /**
  * Author
  *
+ * @author acround
+ *
  * @property int $id Primary
  * @property string $first_name First name
  * @property string $middle_name Middle name
