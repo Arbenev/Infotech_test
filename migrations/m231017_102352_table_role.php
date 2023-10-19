@@ -47,11 +47,13 @@ class m231017_102352_table_role extends Migration
         self::$users[] = [
             'username' => 'guest',
             'password' => md5('guest'),
+            'phone' => '+1234567890',
             'role_id' => self::ROLE_GUEST_ID,
         ];
         self::$users[] = [
             'username' => 'user',
             'password' => md5('user'),
+            'phone' => '+0987654321',
         ];
     }
 

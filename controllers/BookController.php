@@ -81,7 +81,14 @@ class BookController extends Controller
     private function setAuthors(Book $book, array $authorIds)
     {
         $book->deleteAuthors();
+        $user = User::getCurrentUser();
+        $smsPilot = new \app\models\Integration\SmsPilotSmall(\Yii::$app->params['smsPilotApiKey']);
         foreach ($authorIds as $id) {
+            if (\app\models\Books\Subscription::exists($user->id, $id)) {
+                $author = \app\models\Books\Author::findOne($id);
+                $text = sprintf(\Yii::$app->params['smsMessage'], $author->getFullName());
+                $smsPilot->send($user->phone, $text);
+            }
             $fields = [
                 'book_id' => $book->id,
                 'author_id' => $id,
