@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use yii\web\Controller;
 use yii\web\HttpException;
+use yii\web\BadRequestHttpException;
 use app\models\Auth\User;
 use app\models\Books\Author;
 
@@ -66,5 +67,19 @@ class AuthorController extends Controller
         }
         Author::findOne($id)->delete();
         $this->redirect(\Yii::$app->urlManager->createUrl('/authors/'));
+    }
+
+    public function actionTop()
+    {
+        return $this->render('top');
+    }
+
+    public function actionTop10()
+    {
+        $year = \Yii::$app->request->post('year');
+        if (!$year) {
+            throw new BadRequestHttpException('Year is required');
+        }
+        return json_encode(Author::getTop10($year));
     }
 }
