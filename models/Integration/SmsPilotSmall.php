@@ -33,7 +33,7 @@ class SmsPilotSmall
         $result = file_get_contents($query);
         if (is_numeric($result)) {
             $this->error = null;
-            return true;
+            return $result;
         } else {
             $this->error = $result;
             return false;

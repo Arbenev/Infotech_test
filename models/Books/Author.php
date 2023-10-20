@@ -52,12 +52,12 @@ class Author extends ActiveRecord
 
     public static function getTop10($year)
     {
-        $query = $this->makeTopQuery($year);
+        $query = self::makeTopQuery($year);
         $authors = $query->all();
-        return $this->makeTopList($authors);
+        return self::makeTopList($authors);
     }
 
-    private function makeTopQuery($year)
+    private static function makeTopQuery($year)
     {
         $groupByColumns = [
             self::tableName() . '.[[id]]',
@@ -76,7 +76,7 @@ class Author extends ActiveRecord
                         orderBy(['number' => SORT_DESC, 'last_name' => SORT_ASC]);
     }
 
-    private function makeTopList($authors)
+    private static function makeTopList($authors)
     {
         $ret = [];
         foreach ($authors as $author) {

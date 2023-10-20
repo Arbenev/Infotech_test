@@ -34,24 +34,24 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ],
     ];
-    if ($identity->checkAccess(\app\models\Auth\Access::ACCESS_EDIT)) {
+    if ($identity->checkAccess(\app\models\Auth\Access::ACCESS_SUBSCRIPTION)) {
         $columns['columns'][] = [
-            'label' => 'Update',
-            'value' => function ($model) {
-                return Html::button('Update', ['class' => 'btn btn-info', 'value' => $model->id, 'onclick' => 'window.location.href = \'/author/' . $model->id . '\';']);
-            },
-            'format' => 'raw',
-        ];
-    }
-    if ($identity->checkAccess(\app\models\Auth\Access::ACCESS_DELETE)) {
-        $columns['columns'][] = [
-            'label' => 'Delete',
+            'label' => 'Subscriptions',
             'value' => function (Author $model) {
                 if (User::getCurrentUser()->hasSubscription($model->id)) {
                     return Html::button('Unsubscribe', ['class' => 'btn btn-outline-info', 'value' => $model->id, 'onclick' => 'unsubscribe(this);']);
                 } else {
                     return Html::button('Subscribe', ['class' => 'btn btn-outline-info', 'value' => $model->id, 'onclick' => 'subscribe(this);']);
                 }
+            },
+            'format' => 'raw',
+        ];
+    }
+    if ($identity->checkAccess(\app\models\Auth\Access::ACCESS_EDIT)) {
+        $columns['columns'][] = [
+            'label' => 'Update',
+            'value' => function ($model) {
+                return Html::button('Update', ['class' => 'btn btn-info', 'value' => $model->id, 'onclick' => 'window.location.href = \'/author/' . $model->id . '\';']);
             },
             'format' => 'raw',
         ];
