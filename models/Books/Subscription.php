@@ -3,6 +3,7 @@
 namespace app\models\Books;
 
 use \yii\db\ActiveRecord;
+use app\models\Auth\User;
 
 /**
  * Subscription
@@ -19,6 +20,14 @@ class Subscription extends ActiveRecord
     public static function exists($userId, $authorId)
     {
         return self::find()->where('[[user_id]]=' . $userId)->andWhere('[[author_id]]=' . $authorId)->count() > 0;
+    }
+
+    public static function getUsersByAuthor($authorId)
+    {
+        return User::find()->
+                        innerJoin(self::tableName(), self::tableName() . '.[[user_id]]=' . User::tableName() . '.[[id]]')->
+                        where(self::tableName() . '.author_id=:authorId', ['authorId' => $authorId])->
+                        all();
     }
 
     public static function make($userId, $authorId)
